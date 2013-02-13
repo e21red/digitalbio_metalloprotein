@@ -1,0 +1,34 @@
+Carl Butt & Oluwaseun Ogedengbe
+
+We plan to study the relationship between the metal ions in metalloproteins and dehydrons. We will perform our tests upon a selection of metalloproteins from the nrpdb collection for all metals, and then a second time for cadherins only. One of the most important things to know about cadherins is that they can act as a binding, holding two other structures together. This sticky aspect of cadherins makes them seem llike a natural place to look for a another 'sticky' structure like dehydrons.
+
+For metals in general, we will find out what it means for a metal ion to have a dehydron in its vicinity by 
+
+1) Finding our metal ions. This can be accomplished simply by searching for specific metal atoms within a PDB file.
+   We will use the metal ions {Li+, Na+, K+, Ag+, Cs+, Mg2+, Ca2+, Mn2+, Cu2+, Zn2+}
+2) For each metal, locating all the dehydrons within some threshold distance.
+2.5) Obtaining a distance in 3-D space between each dehydron's H-Bond and the metal ion.
+3) Create a statistical representation of the resulting distances, and explain what we have found.
+
+There are four primary functions for metalloproteins:
+1) Transporting metal ions from one place to another.
+2) Using metal ions as a catalyst for some action (as enzymes).
+3) Signal transduction
+4) Storage of metal ions for later use as one of 1-3
+
+We expect that these types of functionality will yield different results, for 1,3 seem to necessitate that the metal ion
+   be at the outer edge of a protein where it can easily be attached/unattached, which we would guess makes them difficult to wrap.
+
+Cadherin proteins: Proteins that require calcium Ca^2+ binding domains to function properly and become adhesive when calcium is attached there.
+Compiling a list of PDB files containing cadherin ions is a pretty straightforward task.
+We will use our above methodology on a list of specific PDB files that all include cadherins, with non-cadherin metal ions filtered out.
+The 'desolvation shell' is the shell of hydrophobic structures that protects the hydrogen bond in a dehydron from water.
+We will, after getting our results for the general cadherin case, repeat our process on two refined sets of data: Those with the Ca ion within
+   this desolvation shell, and those with the Ca on the outside.
+
+Sources:
+http://www.ncbi.nlm.nih.gov/pubmed/2377604
+http://pac.iupac.org/publications/pac/pdf/1983/pdf/5501x0035.pdf (p36 seems useful).
+http://symposium.cshlp.org/content/52/579.full.pdf
+http://www.ks.uiuc.edu/Research/cadherin/
+
