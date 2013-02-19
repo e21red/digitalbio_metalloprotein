@@ -16,8 +16,14 @@ The 'desolvation shell' is the shell of hydrophobic structures that protects the
 
 We propose to look at the locations of the metal ions in these metalloproteins with respect to their nearby dehydrons' desolvation shells. We expect to find our metal ions within the desolvation shells, for if they weren't, their ionic nature would cause them to bond ionically with the nearby waters rather than with the proteins that they are attached to.
 
-For example, in the file 3AK2 (superoxide dismutase), there are only four manganese ions. However, we find these ions in the desolvation shells of 27 different alpha carbons. Calmodulin (1CLL) saw similar results.
+Our early data supports this idea, with all our proteins having a ratio of metal ions : desolvation shells with metal ions >= 1.
+We plan to get more precise and detailed dat in the near future, including:
 
+1) Breaking down our data by metal and protein type, so we can observe trends in cadherins and other specific types of metalloprotein groups
+
+2) Getting precise data on each metal's position within the desolvation shell.
+
+3) Testing how this changes with parameters of the desolvation shell (distance, center atom, etc.)
 
 Sources:
 http://www.ncbi.nlm.nih.gov/pubmed/2377604
