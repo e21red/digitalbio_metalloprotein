@@ -1,0 +1,5 @@
+Occurs at line: 375
+DBREF  1AAY B    1    11  PDB    1AAY     1AAY             1     11            	
+DBREF  1AAY C   51    61  PDB    1AAY     1AAY            51     61            			
+SEQRES   1 B   11   DA  DG  DC  DG  DT  DG  DG  DG  DC  DG  DT                  			
+SEQRES   1 C   11   DT  DA  DC  DG  DC  DC  DC  DA  DC  DG  DC                  
