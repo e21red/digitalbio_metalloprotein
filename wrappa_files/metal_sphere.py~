@@ -10,15 +10,15 @@ def slurp(filename):
     f = open(filename)
     metals = []
     for line in f.readlines():
-        if line[0:6].strip() in ["ATOM", "HETATM"]:
+        if line[0:2] == "HB":
             name = line[12:16].strip()
-            seq = line[21]
+            seq = line[23]
             if name in METALS and seq in ["", "A"]:
-                id = line[22:26].strip()
-                x = line[30:38].strip()
-                y = line[38:46].strip()
-                z = line[46:54].strip()
-                metals.append(Metal(name, id, (x,y,z)))
+                id = line[26:30].strip()
+                #                x = line[30:38].strip()
+                #                y = line[38:46].strip()
+                #                z = line[46:54].strip()
+                metals.append(Metal(name, id, (0,0,0)))
     return metals
 
 def compile_counts(metals):
