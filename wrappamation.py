@@ -23,7 +23,7 @@ for pdb in job:
     if iters: print time.clock() - iters
     iters = time.clock()
     driver.implicitly_wait(60)
-    base_url = "http://www.wrappa.org/wrappa01/wrappa"
+    base_url = "http://wrappa.cs.uchicago.edu/wrappa01/"#"http://www.wrappa.org/wrappa01/wrappa"
     driver.get(base_url)
     try:
         driver.find_element_by_name("termsAccepted").click()
