@@ -1,0 +1,4 @@
+Why do Calcium and isoleucine like each other so much? That doesn't seem normal, because isoleucine is very nonpolar. Valine also, for Cu?
+
+The large numbers for ASP - Ca, and HIS - Cu, because both sidechains are polar.
+ASP and GLU are both negatively charge, so we especially expect high numbers for them.
