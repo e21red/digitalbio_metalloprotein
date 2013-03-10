@@ -5,13 +5,13 @@ from selenium.common.exceptions import NoSuchElementException
 import unittest, time, re, urllib, os
 
 start=time.clock()
-job = ['1T2Y_A.pdb']#Will run everything in job as well as all pdbs in the directory of wrappamation
+job = ['1I7X.pdb']#Will run everything in job as well as all pdbs in the directory of wrappamation
 for files in os.listdir("."):
     if files.endswith(".pdb"):
         job.append(files)
 print len(job), 'files found'
 protiendir = "C:\\Users\\oge\\Desktop\\Dev\\digitalbio_metalloprotein\\proteins\\"
-protiendir = 'C:\\Users\\8\\Downloads\\nrpdb\\'
+protiendir = 'C:\\Users\\oge\\Desktop\\Dev\\digitalbio_metalloprotein\\Hpdbs\\'
 fp = webdriver.FirefoxProfile()
 fp.set_preference("browser.download.dir", 'C:\\Users\\oge\\Desktop\\Dev\\digitalbio_metalloprotein\\proteins\\fakers')
 fp.set_preference("browser.helperApps.neverAsk.saveToDisk", "*.txt")
@@ -23,7 +23,7 @@ for pdb in job:
     if iters: print time.clock() - iters
     iters = time.clock()
     driver.implicitly_wait(60)
-    base_url = "http://wrappa.cs.uchicago.edu/wrappa01/"#"http://www.wrappa.org/wrappa01/wrappa"
+    base_url = "http://www.wrappa.org/wrappa01/wrappa"
     driver.get(base_url)
     try:
         driver.find_element_by_name("termsAccepted").click()
