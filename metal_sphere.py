@@ -82,6 +82,8 @@ def sphere_graph(metals):
     plt.xticks(range(len(METALS)), METALS, size="small")
     plt.xlim(-1, len(METALS))
     plt.ylim(0,10)
+    plt.ylabel("Desolvation spheres served by atom")
+    plt.title("Desolvation spheres served by individual ions")
     for tuple in flat_metals:
         for xys in tuple[1]:
             xs.append(METALS.index(tuple[0]))
