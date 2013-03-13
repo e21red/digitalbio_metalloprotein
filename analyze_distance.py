@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 import math, sys
 from collections import defaultdict, Counter
 
-METALS = ["NA", "FE", "ZN", "MG", "MN", "CU", "NI", "ER", "MB", "K", "CO", "CA"]
+g = open("./metals.txt")
+METALS = [line.strip("\n") for line in g.readlines()] #["CHL", "SF4", "HEM", "NA", "FE", "ZN", "MG", "MN", "CU", "NI", "ER", "MB", "K", "CO", "CA"]
+g.close()
 GROUPS = ["CHL", "SF4", "HEM"]
 
 def slurp_wrappa(filename):
@@ -15,6 +17,8 @@ def slurp_wrappa(filename):
     for line in f.readlines():
         if line [0:2] == "HB" and line[23] == 'A':
             atom = line[12:16].strip()
+ #           if atom not in ["O", "CB", "C", "N"]:
+#                print atom
             if atom in METALS:
                 seq_no = line[25:29].strip()
                 res_seq = line[49:52].strip()
@@ -79,54 +83,61 @@ def find_atoms(filename, metal_tuples):
     # returns a list of metal objects
     return retarr
 
+def stddev(lst, avg):
+    return math.sqrt(sum(map(lambda x:(x-avg)**2, lst))/len(lst))
 
 def distance_graph(defdict):
     xs = []
     ys = []
+    retarr = []
     for cofactor in defdict.keys():
         distances = defdict[cofactor]
-#        avg = sum(distances)/len(distances)
+        avg = sum(distances)/len(distances)
+        retarr.append((cofactor, avg, stddev(distances, avg)))
         for dist in distances:
             xs.append(METALS.index(cofactor))
             ys.append(dist)
         """ Trying to align simple xs, ys. The problem is that we need access to METALS to correctly link with x axis labels """
-
-    plt.xticks(range(len(METALS)), METALS, size="small")
+    plt.title("Metal cofactor distance from desolvation alpha carbon")
+    plt.ylabel("Distance in Angstroms")
+    plt.xticks(range(len(METALS)), METALS, size="small", rotation=75)
     plt.xlim(-1, len(METALS))
-    plt.ylim(0,25)
+    plt.ylim(0,12)
     plt.plot(xs, ys, 'o')
-    plt.savefig("distances.png")
+    plt.savefig("distances.png", dpi=100)
+    return retarr
     
 def main(args):
     # Setup
     totals = defaultdict(list)
     file_results = defaultdict(list)
     filenames = map(lambda s: (s.split('.')[0]).split('/')[-1], args)
-
+    print filenames
     # Loop through wrappa file, find metals, seq nos
     # Loop through hpdb file, find distance from seq_no-metal to center 
 
 
     for filename in filenames:
         wrappa_tuples = []
-        if filename != "analyze_distance":
-            w_path = "wrappa_files/"+filename+".w" 
-            wrappa_tuples = slurp_wrappa(w_path) # STRUCTURED: (ATOM, SEQUENCE NUMBER, RESIDUE'S SEQUENCE NUMBER)
+        w_path = "wrappa_files/"+filename+".w" 
+        wrappa_tuples = slurp_wrappa(w_path) # STRUCTURED: (ATOM, SEQUENCE NUMBER, RESIDUE'S SEQUENCE NUMBER)
 #            print "W GIVES", wrappa_tuples
-            
-            if wrappa_tuples != []:
-                a_path = "Hpdbs/"+filename+".pdb"
-                file_results = find_atoms(a_path, wrappa_tuples)
-                if file_results:
-#                    print "THEN NEXT WE GET",  file_results
-                    for result in file_results:
-                        totals[result[0]].append(result[1])
-                else:
-                    print "Metals found, but not corresponding atoms, in file", filename
+        
+        if wrappa_tuples != []:
+            a_path = "Hpdbs/"+filename+".pdb"
+            file_results = find_atoms(a_path, wrappa_tuples)
+            if file_results:
+                #                    print "THEN NEXT WE GET",  file_results
+                for result in file_results:
+                    totals[result[0]].append(result[1])
             else:
-                print "No metals found in file", filename
+                print "Metals found, but not corresponding atoms, in file", filename
+        else:
+            print "No metals found in file", filename
 
-            distance_graph(totals)
+    values = distance_graph(totals)
+    for value in values:
+        print "%s: Average Distance from CA = %.2f \AA, Standard Deviation = %.2f \AA" %(value[0], value[1], value[2])
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(main(sys.argv[1:]))

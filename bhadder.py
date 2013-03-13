@@ -1,4 +1,4 @@
-import os, subprocess
+import os, subprocess, sys
 
 #Batch Hydrogen Adder-Using Command line Mol Probity (Reduce)
 #Oluwaseun Ogedengbe
@@ -10,19 +10,22 @@ import os, subprocess
 #run bhadder.py
 
 job = []
-for files in os.listdir("."):
-    if files.endswith(".pdb"):
-        print files
-        job.append(files)
+for arg in sys.argv[1:]:
+    if arg[-3:] != "txt":
+        for files in os.listdir("./"+arg):
+            if files.endswith(".pdb"):
+                print files
+                job.append(files)
 
 try: os.makedirs('hpdbs')
 except OSError: pass
 
-instruction = 'reduce -NOFLIP '
+instruction = '../reduce -BUILD '
 print 'performing '+instruction
 for pdb in job:
     fh = open('hpdbs/'+pdb,'w')
-    p = subprocess.Popen(instruction + pdb, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    cmd = instruction + pdb
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     for line in p.stdout.readlines():
         fh.write(line)
         fh.write('\n')

@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+from matplotlib import use
+use('Agg')
+import matplotlib.pyplot as plt
+
+import math, sys
+from collections import defaultdict, Counter
+
+g = open("./metals.txt")
+METALS = [line.strip("\n") for line in g.readlines()] #["CHL", "SF4", "HEM", "NA", "FE", "ZN", "MG", "MN", "CU", "NI", "ER", "MB", "K", "CO", "CA"]
+g.close()
+
+def truncate_atom(name, type):
+    if name not in METALS or type == 'ATOM':
+        if name[0] in 'CHON':
+            name = name[0]
+    return name
+
+def interleave(a, b):
+    ret_dict = {}
+    for atom in a.keys():
+        ret_dict[atom] = (a[atom], b[atom])
+    return ret_dict
+
+def slurp(filename):
+    data = defaultdict(set)
+    f = open(filename)
+    for line in f.readlines():
+        if line[0:2] == "HB":
+            C = line[23]
+            if C in ["", "A"]:
+                id = line[25:30].strip()
+                name = truncate_atom(line[12:16].strip(), line[0:6].strip())
+                data[name].add(id)
+    f.close()
+    retsdict = {}
+    for k in data:
+        retsdict[k] = len(data[k])
+    return retsdict
+
+def check_against_hpdb(filename, desolv_set):
+    full_dict = defaultdict(int)
+
+    f = open(filename)
+    for line in f.readlines():
+        if line[0:6].strip() in ["ATOM", "HETATM"] and line[21] in ['','A']:
+            name = truncate_atom(line[12:16].strip(), line[0:6].strip())
+            full_dict[name] += 1
+    f.close()
+    return interleave(desolv_set, full_dict)
+
+def graph(ratios):
+    xs = []
+    ys = []
+    for key in ratios.keys():
+        x,y = ratios[key]
+        xs.append(x)
+        ys.append(y)
+    plt.xlim(0,25)
+    plt.ylim(0,25)
+
+    plt.plot(xs, ys, 'ro')
+
+    plt.savefig("ratios.png")
+
+def main(args):
+    file_results = defaultdict(list)
+    filenames = map(lambda s: (s.split('.')[0]).split('/')[-1], args)
+
+    for filename in filenames:
+        sets = slurp("wrappa_files/"+filename+".w")
+        ratios = check_against_hpdb("hpdbs/"+filename+".pdb", sets)
+    print ratios
+    graph(ratios)
+    
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]))
+    
+
+
+# Grab ids for everything, then check against hpdb file

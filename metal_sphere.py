@@ -6,8 +6,10 @@ import matplotlib.pyplot as plt
 import math, sys
 from collections import defaultdict, Counter
 
-# FUCK ALPHA CARBONS NOBODY LIKES THEM -- Also, using hard coded ids here
-METALS = ["CHL", "SF4", "HEM", "NA", "FE", "ZN", "MG", "MN", "CU", "NI", "ER", "MB", "K", "CO", "CA"]
+g = open("./metals.txt")
+METALS = [line.strip("\n") for line in g.readlines()] #["CHL", "SF4", "HEM", "NA", "FE", "ZN", "MG", "MN", "CU", "NI", "ER", "MB", "K", "CO", "CA"]
+g.close()
+
 #COLORS = dict(zip(METALS, ["#%x" %111111*i for i in range(15)] ))
 
 class Metal:
@@ -41,6 +43,18 @@ def slurp(filename):
     # returns a list of metal objects
     return metals
 
+def adjust_total_counts(filename, counts):
+    f = open(filename)
+    for line in f.readlines():
+        if line == "END":
+            print "HELLO"
+        if line[0:6] == "HETATM":
+            name = line[12:16].strip()
+            if name in METALS and line[21] in ["A", ""]:
+                print name, line[:-2]
+                counts[name] += 1
+    print filename, counts
+
 def compile_counts(metals):
     retlist = []
     file_metals = defaultdict(list)
@@ -73,13 +87,37 @@ def group_by_amino(metals):
     # Each list is a tuple (ID, [(sub_id, count), (sub_id, count), ...]
     return metal_list, amino_list
 
-def sphere_graph(metals):
+def stddev(lst, avg):
+    return math.sqrt(sum(map(lambda x:(x-avg)**2, lst))/len(lst))
+
+def sphere_graph(metals, total_metal_counts):
     flat_metals = [tuple for sublist in metals for tuple in sublist]
     xs = []
-    ys = []# dict( zip(METALS, [0]*len(METALS)) )
+    ys = []
+    retarr = []
+
+    uniqs_found = defaultdict(int)
+    for ion, association in flat_metals:
+        uniqs_found[ion] += len(association)
+
+    served = defaultdict(list)
+    for metal, x in flat_metals:
+        served[metal].extend([pair[1] for pair in x])
+
+    for cofactor in served.keys():
+        lst = served[cofactor]
+        avg = sum(lst)/float(len(lst))
+        retarr.append((cofactor, avg, stddev(lst, avg)))
+
+        print cofactor, uniqs_found[cofactor], total_metal_counts[cofactor]
+        if uniqs_found[cofactor] != total_metal_counts[cofactor]:
+            for i in range(total_metal_counts[cofactor] - uniqs_found[cofactor]):
+                xs.append(METALS.index(cofactor))
+                ys.append(0)
+
     """ Trying to align simple xs, ys. The problem is that we need access to METALS to correctly link with x axis labels """
     colors = []
-    plt.xticks(range(len(METALS)), METALS, size="small")
+    plt.xticks(range(len(METALS)), METALS, size="small", rotation=75)
     plt.xlim(-1, len(METALS))
     plt.ylim(0,10)
     plt.ylabel("Desolvation spheres served by atom")
@@ -89,26 +127,38 @@ def sphere_graph(metals):
             xs.append(METALS.index(tuple[0]))
             ys.append(xys[1])
             colors.append(tuple[0])
-#    print xs, ys
+
     plt.plot(xs, ys, 'o')
     plt.savefig("desolv.png")
+
+
+    return retarr
     
+
 def main(args):
+    file_results = defaultdict(list)
+    filenames = map(lambda s: (s.split('.')[0]).split('/')[-1], args)
+
     grouped_metals = []
     amn_metals = []
-    for filename in args:
-        metals = slurp(filename)
+    total_metal_counts = defaultdict(int)
+    for filename in filenames:
+        metals = slurp("wrappa_files/"+filename+".w")
+        adjust_total_counts("Hpdbs/"+filename+".pdb", total_metal_counts)
         if metals:
             grouped_metals.append(compile_counts(metals))
             amn_metals += metals
-    sphere_graph(grouped_metals)
+    values = sphere_graph(grouped_metals, total_metal_counts)
+    for value in values:
+        print "%s: Average Served Domains = %.2f \AA, Standard Deviation = %.2f \AA" %(value[0], value[1], value[2])
 
+"""
     metal_list, amino_list = group_by_amino(amn_metals)
     for lst in [metal_list, amino_list]:
         for key, pairs in lst:
             for pair in pairs:
                 print "%s: %s, %d" %(key, pair[0], pair[1])
         print "-------------------"
-
+"""
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(main(sys.argv[1:]))
