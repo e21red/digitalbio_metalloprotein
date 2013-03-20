@@ -126,9 +126,17 @@ def sphere_graph(metals, total_metal_counts):
         for xys in tuple[1]:
             xs.append(METALS.index(tuple[0]))
             ys.append(xys[1])
-            colors.append(tuple[0])
-
-    plt.plot(xs, ys, 'o')
+# print here for old fashioned
+    """    condensed = defaultdict(int)
+    for i, metal_ind in enumerate(xs):
+    condensed[(metal_ind, ys[i])] += 1
+    
+    xs, ys = [], []
+    for tuple in condensed:
+    xs = tuple[0] 
+    ys = tuple[1]"""
+    
+    plt.plot(xs, ys, 'o')#, ms=condensed[tuple]*2)
     plt.savefig("desolv.png")
 
 

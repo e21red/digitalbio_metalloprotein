@@ -17,7 +17,7 @@ def slurp_wrappa(filename):
     for line in f.readlines():
         if line [0:2] == "HB" and line[23] == 'A':
             atom = line[12:16].strip()
- #           if atom not in ["O", "CB", "C", "N"]:
+#           if atom not in ["O", "CB", "C", "N"]:
 #                print atom
             if atom in METALS:
                 seq_no = line[25:29].strip()

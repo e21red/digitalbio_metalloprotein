@@ -32,6 +32,7 @@ PA
 PB
 PD
 PR
+PT
 RB
 RE
 RH
@@ -42,6 +43,7 @@ SN
 SR
 TA
 TB
+TL
 TI
 W
 U

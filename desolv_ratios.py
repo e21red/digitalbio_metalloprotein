@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from matplotlib import use
 use('Agg')
+import re
 import matplotlib.pyplot as plt
 
 import math, sys
@@ -10,10 +11,14 @@ g = open("./metals.txt")
 METALS = [line.strip("\n") for line in g.readlines()] #["CHL", "SF4", "HEM", "NA", "FE", "ZN", "MG", "MN", "CU", "NI", "ER", "MB", "K", "CO", "CA"]
 g.close()
 
-def truncate_atom(name, type):
-    if name not in METALS or type == 'ATOM':
-        if name[0] in 'CHON':
-            name = name[0]
+def truncate_atom(oldname, type):
+    if oldname[0] == 'B':
+        print oldname
+    if oldname == 'BRB':
+        name = 'BR'
+    name = oldname.translate(None, '0123456789')
+    if name not in METALS+['AS','CL','BR'] or type == 'ATOM':
+        name = name[0]
     return name
 
 def slurp(filename):
@@ -25,6 +30,8 @@ def slurp(filename):
             if C in ["", "A"]:
                 id = line[25:30].strip()
                 name = truncate_atom(line[12:16].strip(), line[0:6].strip())
+                if re.match('\d', name):
+                    print "Hello", name
                 data[name].add(id)
     f.close()
     retsdict = {}
@@ -51,7 +58,8 @@ def add_twotuples(a,b):
 def print_ratios(dict):
     for key in dict.keys():
         ratio = dict[key]
-        print key, ratio, float(ratio[0])/ratio[1] 
+#        print key
+#        print key, ratio, float(ratio[0])/ratio[1] 
 
 def interleave(a, b, ratios):
     for atom in a.keys():
@@ -59,8 +67,7 @@ def interleave(a, b, ratios):
     return ratios
 
 def graph(ratios):
-    xs = []
-    ys = []
+    mxs, oxs, mys, oys = [],[],[],[]
     use, use2 = [], []
     for key in ratios.keys():
         if key not in use:
@@ -68,16 +75,29 @@ def graph(ratios):
                 use.append(key)
             else:
                 use2.append(key)
-    use += use2
+    base = sorted(use + use2)
     for key in ratios.keys():
         x,y = ratios[key]
-        xs.append(use.index(key))
-        ys.append(float(x)/y)
-    print xs, "\n---\n", ys
+        if y != 0:
+            value = float(x)/y
+            if value > 1:
+                value = 1
+            if key in METALS:
+                mxs.append(base.index(key))
+                mys.append(value)
+            else:
+                oxs.append(base.index(key))
+                oys.append(value)
     plt.xlim(0,25)
-    plt.ylim(0,1.1)
+    plt.ylim(0,1.02)
+    plt.xticks(range(len(base)),base, size='small', rotation=75)
+    plt.title("Dehydron ratios")
+    plt.ylabel("Ration of dehydron-serving atoms to total found")
+#    plt.legend(('Metals', 'Nonmetals'), loc='upper right')
+    plt.scatter(mxs, mys, color='red', marker='s', label='Metals')
+    plt.scatter(oxs, oys, color='blue', marker='D', label='nonmetals')
 
-    plt.plot(xs, ys, 'ro')
+
 
     plt.savefig("ratios.png")
 
